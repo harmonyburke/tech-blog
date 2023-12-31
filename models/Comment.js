@@ -26,7 +26,7 @@ Comment.init(
                 key: 'id'
             }
         },
-        postId:{
+        post_id:{
             type: DataTypes.INTEGER,
             allowNull:false,
             references:{
