@@ -3,7 +3,8 @@ const { User, BlogPost, Comment} = require('../models');
 const withAuth = require('../utils/auth');
 
 router.get('/', async (req, res) => {
-  BlogPost.findAll({
+  try {
+  const post= await BlogPost.findAll({
     attributes: [
       'id',
       'post',
@@ -20,6 +21,9 @@ router.get('/', async (req, res) => {
         }
       }
     ]
-  })
-  .then()
+    
+  }) res.render('homepage', {User});
+} catch(err){
+  res.status(500).json(err)
+}
 })
