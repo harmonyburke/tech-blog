@@ -5,6 +5,7 @@ const Comment=require('./Comment');
 
 User.hasMany(BlogPost, {
     foreignKey: 'user_id',
+    onDelete: 'cascade'
 });
 
 BlogPost.belongsTo(User, {
@@ -12,15 +13,16 @@ BlogPost.belongsTo(User, {
 });
 
 Comment.belongsTo(User, {
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    onDelete: 'cascade'
 });
 
-Comment.belongsTo(Post, {
+Comment.belongsTo(BlogPost, {
     foreignKey: 'user_id'
 });
 
 User.hasMany(Comment, {
-    foreignKey: 'post_id'
+    foreignKey: 'user_id'
 });
 
 module.exports= {User, BlogPost, Comment};

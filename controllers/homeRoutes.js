@@ -5,25 +5,32 @@ const withAuth = require('../utils/auth');
 router.get('/', async (req, res) => {
   try {
   const post= await BlogPost.findAll({
-    attributes: [
-      'id',
-      'post',
-      'title',
-      'date_created'
-    ],
+    // attributes: [
+    //   'id',
+    //   'post',
+    //   'title',
+    //   'date_created'
+    // ],
     include: [
       {
-        model: Comment,
-        attributes: ['id', 'commentText', 'user_id', 'post_id', 'date_created'],
-        include:{
-          model:User,
-          attributes:['username']
-        }
+        model: User,
+        attributes: ['username'],
+        // include:{
+        //   model:User,
+        //   // attributes: ['id', 'commentText', 'user_id', 'post_id', 'date_created'],
+        //   attributes:['username']
+        // }
+
       }
     ]
     
-  }) 
-  res.render('homepage', post);
+  }) ;
+  // const posts= post.map((blog) => blog.get({plain:true}))
+
+  res.render('homepage', {
+    // posts, 
+    loggedIn: req.session.loggedIn
+  });
 } catch(err){
   res.status(500).json(err)
 }
@@ -44,7 +51,7 @@ router.post('/', async (req, res)=>{
       user_id: req.body.user_id,
     });
     res.status(200).json(dbPostData);
-  }catch (err){
+  }catch (err) {
     res.status(500).json(err)
   }
 })
