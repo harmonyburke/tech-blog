@@ -1,16 +1,18 @@
 {{!-- <h1>hello world</h1> --}}
+<body class="blogposts">
 {{#each blogPosts as |blogPost| }}
 <div class="row mb-4 project">
   <div class="col-md-5">
     <h2>
-      <a href="/blogPost/{{blogPost.id}}">{{blogPost.title}}</a>
+      <a href="/blogPost/{{BlogPost.id}}">{{BlogPost.title}}</a>
     </h2>
-    <p>Created by {{blogPost.user.username}} on {{format_date blogPost.date_created}}</p>
+    <p>Created by {{BlogPost.user_id}} on {{format_date BlogPost.date_created}}</p>
   </div>
   <div class="col-md-7">
     <p>
-      {{blogPost.post}}
+      {{BlogPost.post}}
     </p>
   </div>
 </div>
 {{/each}}
+</body>
