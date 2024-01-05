@@ -1,0 +1,14 @@
+[
+    {
+        "title": "I like dogs",
+        "post": "I think dogs are really cool and fun.",
+        "date_created":"12-12-12",
+        "user_id": "123"
+    },
+    {
+        "title":"I like cats",
+        "post": "Cats are also pretty cool and do cool stuff.",
+        "date_created":"12-12-12",
+        "user_id":"12345"
+    }
+]
