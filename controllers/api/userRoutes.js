@@ -1,36 +1,54 @@
 const router = require('express').Router();
 const { User } = require('../../models');
 
-// CREATE new user
-router.post('/', async (req, res) => {
+// GET all User Data
+router.get('/', async (req, res) => {
   try {
-    const dbUserData = await User.create({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    });
+    const userData = await User.findAll();
 
-    req.session.save(() => {
-      req.session.loggedIn = true;
+    res.json(userData);
 
-      res.status(200).json(dbUserData);
-    });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
 });
 
-// Login
+// new user sign up adds user to db
+router.post('/signup', async (req, res) =>{
+  console.log(req.body)
+  User.create(req.body)
+  .then((newUser) =>{
+
+    req.session.save(() => {
+      req.session.loggedIn = true;
+      req.session.username = newUser.username;
+      req.session.user_id = newUser.id;
+      res
+        .status(200)
+        .json({ user: newUser, message: 'You are now logged in!' });
+    });
+
+  })
+  .catch((err) => {
+    res.json(err)
+  })
+});
+
+// Login route
 router.post('/login', async (req, res) => {
   try {
     const dbUserData = await User.findOne({
       where: {
-        email: req.body.email,
+        username: req.body.username,
       },
-    });
+    })
 
-    if (!dbUserData) {
+    const user = await dbUserData.get({ plain: true });
+
+    console.log('user', user);
+
+    if (!user) {
       res
         .status(400)
         .json({ message: 'Incorrect email or password. Please try again!' });
@@ -46,13 +64,33 @@ router.post('/login', async (req, res) => {
       return;
     }
 
+    // For when working with cookies
     req.session.save(() => {
       req.session.loggedIn = true;
+      req.session.username = user.username;
+      req.session.user_id = user.id;
 
+ 
       res
         .status(200)
         .json({ user: dbUserData, message: 'You are now logged in!' });
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+// GET one user
+router.get('/:id', async (req, res) => {
+  try {
+    const userData = await User.findByPk(req.params.id);
+
+    // testing the route
+    res.json(userData);
+
+    // For sending userData to login.handlebars
+    // res.render('login', { userData, loggedIn: req.session.loggedIn });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
