@@ -1,13 +1,12 @@
-const router = require('express').Router();
-const { User } = require('../../models');
+const router = require("express").Router();
+const { User } = require("../../models");
 
 // GET all User Data
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const userData = await User.findAll();
 
     res.json(userData);
-
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -15,43 +14,33 @@ router.get('/', async (req, res) => {
 });
 
 // new user sign up adds user to db
-router.post('/signup', async (req, res) =>{
-  console.log(req.body)
-  User.create(req.body)
-  .then((newUser) =>{
+router.post("/", async (req, res) => {
+  try {
+    const dbUserData = await User.create(req.body);
 
     req.session.save(() => {
-      req.session.loggedIn = true;
-      req.session.username = newUser.username;
-      req.session.user_id = newUser.id;
-      res
-        .status(200)
-        .json({ user: newUser, message: 'You are now logged in!' });
-    });
+      (req.session.user_id = dbUserData.id), (req.session.loggedIn = true);
 
-  })
-  .catch((err) => {
-    res.json(err)
-  })
+      res.status(200).json(dbUserData);
+    });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 });
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const dbUserData = await User.findOne({
       where: {
         username: req.body.username,
       },
-    })
+    });
 
-    const user = await dbUserData.get({ plain: true });
-
-    console.log('user', user);
-
-    if (!user) {
+    if (!dbUserData) {
       res
         .status(400)
-        .json({ message: 'Incorrect email or password. Please try again!' });
+        .json({ message: "Wrong username or password, please try again!" });
       return;
     }
 
@@ -60,20 +49,19 @@ router.post('/login', async (req, res) => {
     if (!validPassword) {
       res
         .status(400)
-        .json({ message: 'Incorrect email or password. Please try again!' });
+        .json({ message: "Incorrect email or password. Please try again!" });
       return;
     }
 
     // For when working with cookies
     req.session.save(() => {
       req.session.loggedIn = true;
-      req.session.username = user.username;
-      req.session.user_id = user.id;
+      req.session.username = User.username;
+      req.session.user_id = User.user.id;
 
- 
       res
         .status(200)
-        .json({ user: dbUserData, message: 'You are now logged in!' });
+        .json({ user: dbUserData, message: "You are now logged in!" });
     });
   } catch (err) {
     console.log(err);
@@ -82,7 +70,7 @@ router.post('/login', async (req, res) => {
 });
 
 // GET one user
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const userData = await User.findByPk(req.params.id);
 
@@ -98,7 +86,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Logout
-router.post('/logout', (req, res) => {
+router.post("/logout", (req, res) => {
   if (req.session.loggedIn) {
     req.session.destroy(() => {
       res.status(204).end();
